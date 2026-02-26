@@ -32,14 +32,15 @@ booking_service/
 
 ```bash
 pip install -e .
-
+```
 ### Запуск програми
 
 ```bash
 python src/booking_service/main.py
-
+```
 ### Запуск тестів
 Для перевірки працездатності моделей та логіки валідації використовуйте:
 
 ```bash
 pytest
+```
