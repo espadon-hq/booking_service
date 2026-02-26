@@ -47,7 +47,7 @@ hotels_db = [
 ]
 
 def get_filtered_hotels(city: str = None, max_price: float = None):
-    """Фільтрація списку готелів (Етап 1: Пошуковий рушій)"""
+    """Фільтрація списку готелів"""
     results = hotels_db
     if city:
         results = [h for h in results if city.lower() in h['location'].lower()]
@@ -56,7 +56,7 @@ def get_filtered_hotels(city: str = None, max_price: float = None):
     return results
 
 def validate_dates(check_in: date, check_out: date):
-    """Складна валідація дат (Етап 1: Бізнес-логіка)"""
+    """Складна валідація дат"""
     today = date.today()
     
     if check_in < today:
@@ -72,6 +72,6 @@ def validate_dates(check_in: date, check_out: date):
     return True, f"Тривалість: {duration} ночей."
 
 def calculate_price(price_per_night: float, check_in: date, check_out: date) -> float:
-    """Розрахунок вартості (Етап 1: Фінансова логіка)"""
+    """Розрахунок вартості"""
     nights = (check_out - check_in).days
     return nights * price_per_night
