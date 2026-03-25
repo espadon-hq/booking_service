@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+
+# Віртуальне середовище
+venv/
+.venv/
+env/
+
+# Встановлений пакет
+*.egg-info/
+dist/
+build/
+
+# Змінні середовища
+.env
+
+# Pytest
+.pytest_cache/
+.tox/
+.coverage
+htmlcov/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
