@@ -499,7 +499,80 @@ def cancel_booking() -> None:
     print(f"\n  Бронювання #{booking.id} скасовано.")
     pause()
 
+def export_data() -> None:
+    """Експортує всі дані в файли."""
+    from booking_service.file_handler import (
+        export_bookings_csv,
+        export_hotels_csv,
+        export_json,
+        export_rooms_csv,
+    )
 
+    sep("ЕКСПОРТ ДАНИХ")
+    print("  1. CSV (окремі файли)")
+    print("  2. JSON (один файл)")
+
+    choice = input("\n  Формат: ").strip()
+
+    if choice == "1":
+        export_hotels_csv(HOTELS, "data/hotels.csv")
+        export_rooms_csv(ROOMS, "data/rooms.csv")
+        export_bookings_csv(BOOKINGS, "data/bookings.csv")
+        print("\n  Збережено: data/hotels.csv, data/rooms.csv, data/bookings.csv")
+
+    elif choice == "2":
+        export_json(HOTELS, ROOMS, BOOKINGS, USERS, "data/backup.json")
+        print("\n  Збережено: data/backup.json")
+
+    else:
+        print("  Невідомий формат.")
+
+    pause()
+
+
+def import_data() -> None:
+    """Імпортує дані з файлів."""
+    from booking_service.file_handler import import_hotels_csv, import_json
+
+    sep("ІМПОРТ ДАНИХ")
+    print("  1. Готелі з CSV")
+    print("  2. Всі дані з JSON")
+
+    choice = input("\n  Формат: ").strip()
+
+    if choice == "1":
+        filepath = input("  Шлях до CSV файлу: ").strip()
+        try:
+            imported = import_hotels_csv(filepath)
+            HOTELS.clear()
+            HOTELS.extend(imported)
+            print(f"\n  Імпортовано {len(imported)} готелів.")
+        except (FileNotFoundError, ValueError) as e:
+            print(f"\n  Помилка: {e}")
+
+    elif choice == "2":
+        filepath = input("  Шлях до JSON файлу: ").strip()
+        try:
+            from booking_service.file_handler import import_json
+            data = import_json(filepath)
+            HOTELS.clear()
+            HOTELS.extend(data["hotels"])
+            ROOMS.clear()
+            ROOMS.extend(data["rooms"])
+            BOOKINGS.clear()
+            BOOKINGS.extend(data["bookings"])
+            USERS.clear()
+            USERS.extend(data["users"])
+            print(f"\n  Імпортовано: {len(data['hotels'])} готелів, "
+                  f"{len(data['rooms'])} кімнат, "
+                  f"{len(data['bookings'])} бронювань.")
+        except (FileNotFoundError, ValueError) as e:
+            print(f"\n  Помилка: {e}")
+
+    else:
+        print("  Невідомий формат.")
+
+    pause()
 # ── Головне меню ──────────────────────────────────────────────────────────────
 
 
@@ -508,16 +581,18 @@ def main() -> None:
     app_name = os.getenv("APP_NAME", "Booking Service")
     app_version = os.getenv("APP_VERSION", "0.0.1")
 
-    menu_items = {
-        "1": ("Переглянути готелі", show_hotels),
-        "2": ("Переглянути кімнати готелю", show_rooms),
-        "3": ("Перевірити доступність кімнат", check_availability),
-        "4": ("Реєстрація", register_user),
-        "5": ("Забронювати кімнату", create_booking),
-        "6": ("Мої бронювання", show_my_bookings),
-        "7": ("Скасувати бронювання", cancel_booking),
-        "0": ("Вийти", None),
-    }
+menu_items = {
+    "1": ("Переглянути готелі", show_hotels),
+    "2": ("Переглянути кімнати готелю", show_rooms),
+    "3": ("Перевірити доступність кімнат", check_availability),
+    "4": ("Реєстрація", register_user),
+    "5": ("Забронювати кімнату", create_booking),
+    "6": ("Мої бронювання", show_my_bookings),
+    "7": ("Скасувати бронювання", cancel_booking),
+    "8": ("Експорт даних", export_data),
+    "9": ("Імпорт даних", import_data),
+    "0": ("Вийти", None),
+}
 
     while True:
         clear()
@@ -542,5 +617,80 @@ def main() -> None:
         action()
 
 
+def export_data() -> None:
+    """Експортує всі дані в файли."""
+    from booking_service.file_handler import (
+        export_bookings_csv,
+        export_hotels_csv,
+        export_json,
+        export_rooms_csv,
+    )
+
+    sep("ЕКСПОРТ ДАНИХ")
+    print("  1. CSV (окремі файли)")
+    print("  2. JSON (один файл)")
+
+    choice = input("\n  Формат: ").strip()
+
+    if choice == "1":
+        export_hotels_csv(HOTELS, "data/hotels.csv")
+        export_rooms_csv(ROOMS, "data/rooms.csv")
+        export_bookings_csv(BOOKINGS, "data/bookings.csv")
+        print("\n  Збережено: data/hotels.csv, data/rooms.csv, data/bookings.csv")
+
+    elif choice == "2":
+        export_json(HOTELS, ROOMS, BOOKINGS, USERS, "data/backup.json")
+        print("\n  Збережено: data/backup.json")
+
+    else:
+        print("  Невідомий формат.")
+
+    pause()
+
+
+def import_data() -> None:
+    """Імпортує дані з файлів."""
+    from booking_service.file_handler import import_hotels_csv, import_json
+
+    sep("ІМПОРТ ДАНИХ")
+    print("  1. Готелі з CSV")
+    print("  2. Всі дані з JSON")
+
+    choice = input("\n  Формат: ").strip()
+
+    if choice == "1":
+        filepath = input("  Шлях до CSV файлу: ").strip()
+        try:
+            imported = import_hotels_csv(filepath)
+            HOTELS.clear()
+            HOTELS.extend(imported)
+            print(f"\n  Імпортовано {len(imported)} готелів.")
+        except (FileNotFoundError, ValueError) as e:
+            print(f"\n  Помилка: {e}")
+
+    elif choice == "2":
+        filepath = input("  Шлях до JSON файлу: ").strip()
+        try:
+            from booking_service.file_handler import import_json
+            data = import_json(filepath)
+            HOTELS.clear()
+            HOTELS.extend(data["hotels"])
+            ROOMS.clear()
+            ROOMS.extend(data["rooms"])
+            BOOKINGS.clear()
+            BOOKINGS.extend(data["bookings"])
+            USERS.clear()
+            USERS.extend(data["users"])
+            print(f"\n  Імпортовано: {len(data['hotels'])} готелів, "
+                  f"{len(data['rooms'])} кімнат, "
+                  f"{len(data['bookings'])} бронювань.")
+        except (FileNotFoundError, ValueError) as e:
+            print(f"\n  Помилка: {e}")
+
+    else:
+        print("  Невідомий формат.")
+
+    pause()
+    
 if __name__ == "__main__":
     main()

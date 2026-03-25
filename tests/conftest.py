@@ -3,6 +3,7 @@
 from datetime import date, timedelta
 
 import pytest
+
 from booking_service.models import Hotel, Room, User
 
 
