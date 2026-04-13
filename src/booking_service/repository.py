@@ -50,12 +50,8 @@ def get_hotels_by_city(db: Session, city: str) -> list[Hotel]:
     Returns:
         Список готелів у місті.
     """
-    return (
-        db.query(Hotel)
-        .filter(Hotel.city.ilike(city))
-        .order_by(Hotel.stars.desc())
-        .all()
-    )
+    all_hotels = db.query(Hotel).order_by(Hotel.stars.desc()).all()
+    return [h for h in all_hotels if h.city.lower() == city.lower()]
 
 
 def create_hotel(
