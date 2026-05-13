@@ -17,9 +17,7 @@ templates = Jinja2Templates(directory="src/booking_service/templates")
 @router.get("/", response_class=HTMLResponse)
 def hotels_list(request: Request, city: str = None, db: Session = Depends(get_db)):
     hotels = repo.get_hotels_by_city(db, city) if city else repo.get_all_hotels(db)
-    return templates.TemplateResponse("hotels.html", {
-        "request": request, "hotels": hotels, "city": city,
-    })
+    return templates.TemplateResponse(request, "hotels.html", {"hotels": hotels, "city": city})
 
 
 @router.get("/hotels/{hotel_id}", response_class=HTMLResponse)
@@ -62,10 +60,7 @@ def hotel_detail(
                 total_price = calculate_total_price(room, ci, co)
         rooms.append({"room": room, "available": available, "total_price": total_price})
 
-    return templates.TemplateResponse("hotel_detail.html", {
-        "request": request, "hotel": hotel, "rooms": rooms,
-        "check_in": check_in, "check_out": check_out, "error": error,
-    })
+    return templates.TemplateResponse(request, "hotel_detail.html", {"hotel": hotel, "rooms": rooms, "check_in": check_in, "check_out": check_out, "error": error})
 
 
 @router.post("/bookings/create")
@@ -105,7 +100,7 @@ def bookings_list(request: Request, db: Session = Depends(get_db)):
             "total_price": b.total_price,
             "status": b.status,
         })
-    return templates.TemplateResponse("bookings.html", {"request": request, "bookings": result})
+    return templates.TemplateResponse(request, "bookings.html", {"bookings": result})
 
 
 @router.post("/bookings/{booking_id}/cancel")
