@@ -60,7 +60,10 @@ def hotel_detail(
                 total_price = calculate_total_price(room, ci, co)
         rooms.append({"room": room, "available": available, "total_price": total_price})
 
-    return templates.TemplateResponse(request, "hotel_detail.html", {"hotel": hotel, "rooms": rooms, "check_in": check_in, "check_out": check_out, "error": error})
+    return templates.TemplateResponse(request, "hotel_detail.html", {
+        "hotel": hotel, "rooms": rooms,
+        "check_in": check_in, "check_out": check_out, "error": error,
+    })
 
 
 @router.post("/bookings/create")
@@ -92,9 +95,9 @@ def bookings_list(request: Request, db: Session = Depends(get_db)):
         user = repo.get_user_by_id(db, b.user_id)
         result.append({
             "id": b.id,
-            "hotel_name": hotel.name if hotel else "—",
-            "room_number": room.number if room else "—",
-            "user_email": user.email if user else "—",
+            "hotel_name": hotel.name if hotel else "-",
+            "room_number": room.number if room else "-",
+            "user_email": user.email if user else "-",
             "check_in": b.check_in,
             "check_out": b.check_out,
             "total_price": b.total_price,
