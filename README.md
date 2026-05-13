@@ -85,7 +85,6 @@ Swagger API docs: http://localhost:8000/docs
  ```bash
 pytest -v
 ```
-103 тести: моделі, бізнес-логіка, репозиторій, API.
 ---
 
 ## REST API
