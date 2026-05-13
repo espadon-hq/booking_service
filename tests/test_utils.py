@@ -5,7 +5,7 @@ from datetime import date, timedelta
 import pytest
 
 from booking_service.models import Booking, Room
-from booking_service.utils import (
+from booking_service.repository import (
     calculate_total_price,
     filter_hotels_by_city,
     filter_rooms_by_price,

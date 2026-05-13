@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='booking_service',
-    version='0.0.1',
+    version='1.0.0',
     license='MIT',
     author='Shimanskyi Vitaliy',
     author_email='vitashi02@gmail.com',

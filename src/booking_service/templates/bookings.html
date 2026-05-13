@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Бронювання{% endblock %}
+{% block content %}
+<h1 class="page-title">Бронювання</h1>
+<p class="subtitle">Перелік всіх бронювань</p>
+
+{% if bookings %}
+<div style="border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
+<table>
+    <thead>
+        <tr>
+            <th>#</th><th>Готель</th><th>Кімната</th><th>Гість</th>
+            <th>Заїзд</th><th>Виїзд</th><th>Сума</th><th>Статус</th><th></th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for b in bookings %}
+    <tr>
+        <td style="color:#bbb;">{{ b.id }}</td>
+        <td style="font-weight:500;">{{ b.hotel_name }}</td>
+        <td>{{ b.room_number }}</td>
+        <td style="color:#666;">{{ b.user_email }}</td>
+        <td>{{ b.check_in }}</td>
+        <td>{{ b.check_out }}</td>
+        <td style="font-weight:600;">{{ b.total_price }} грн</td>
+        <td>
+            {% if b.status == "confirmed" %}
+            <span class="badge badge-green">Підтверджено</span>
+            {% else %}
+            <span class="badge badge-gray">Скасовано</span>
+            {% endif %}
+        </td>
+        <td>
+            {% if b.status == "confirmed" %}
+            <form method="post" action="/bookings/{{ b.id }}/cancel" style="display:inline">
+                <button class="btn btn-danger-outline" onclick="return confirm('Скасувати?')">Скасувати</button>
+            </form>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<p style="color:#888; font-size:14px;">Бронювань поки немає.</p>
+{% endif %}
+{% endblock %}
