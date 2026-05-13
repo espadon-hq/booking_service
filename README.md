@@ -22,33 +22,36 @@
 ---
 
 ## Структура проекту
-booking\_service/
-├── src/booking\_service/
+
+```
+booking_service/
+├── src/booking_service/
 │   ├── database.py       — конфігурація, підключення до PostgreSQL, ORM моделі
 │   ├── models.py         — dataclass моделі
 │   ├── schemas.py        — Pydantic схеми для API
 │   ├── repository.py     — CRUD операції та бізнес-логіка
 │   ├── main.py           — точка входу FastAPI
 │   └── routers/
-│       ├── hotels.py     — REST API /hotels│       ├── rooms.py      — REST API /hotels/{id}/rooms
+│       ├── hotels.py     — REST API /hotels
+│       ├── rooms.py      — REST API /hotels/{id}/rooms
 │       ├── users.py      — REST API /users
 │       ├── bookings.py   — REST API /bookings
 │       └── web.py        — веб-інтерфейс (HTML сторінки)
 │   └── templates/
 │       ├── base.html         — базовий шаблон (navbar, стилі)
 │       ├── hotels.html       — список готелів
-│       ├── hotel\_detail.html — готель, кімнати, форма бронювання
+│       ├── hotel_detail.html — готель, кімнати, форма бронювання
 │       └── bookings.html     — список бронювань
 ├── tests/
 │   ├── conftest.py           — спільні фікстури
-│   ├── test\_models.py        — тести dataclass моделей
-│   ├── test\_utils.py         — тести бізнес-логіки
-│   ├── test\_repository.py    — тести CRUD операцій
-│   └── test\_api.py           — тести REST API
+│   ├── test_models.py        — тести dataclass моделей
+│   ├── test_utils.py         — тести бізнес-логіки
+│   ├── test_repository.py    — тести CRUD операцій
+│   └── test_api.py           — тести REST API
 ├── docker-compose.yml        — PostgreSQL контейнер
 ├── .env                      — змінні середовища
 └── README.md
----
+```
 
 ## Шари застосунку
 
