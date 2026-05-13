@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Готелі{% endblock %}
+{% block content %}
+<h1 class="page-title">Готелі</h1>
+<p class="subtitle">Оберіть готель для бронювання</p>
+
+<div class="filters">
+    <a href="/" class="filter-btn {% if not city %}active{% endif %}">Всі міста</a>
+    {% for c in ["Київ", "Львів", "Одеса", "Харків", "Дніпро"] %}
+    <a href="/?city={{ c }}" class="filter-btn {% if city == c %}active{% endif %}">{{ c }}</a>
+    {% endfor %}
+</div>
+
+{% if hotels %}
+<div class="grid">
+{% for hotel in hotels %}
+<div class="card">
+    <div class="card-body">
+        <div class="stars">{% for i in range(hotel.stars) %}&#9733;{% endfor %}</div>
+        <div class="hotel-name">{{ hotel.name }}</div>
+        <div class="hotel-location">{{ hotel.city }} &mdash; {{ hotel.address }}</div>
+        {% if hotel.description %}
+        <div class="hotel-desc">{{ hotel.description }}</div>
+        {% endif %}
+    </div>
+    <div class="card-footer">
+        <a href="/hotels/{{ hotel.id }}" class="btn btn-dark btn-full">Переглянути кімнати</a>
+    </div>
+</div>
+{% endfor %}
+</div>
+{% else %}
+<p style="color:#888; font-size:14px;">Готелів не знайдено.</p>
+{% endif %}
+{% endblock %}

@@ -14,7 +14,7 @@ from booking_service.schemas import (
     RoomCreate,
     RoomOut,
 )
-from booking_service.utils import calculate_total_price, is_dates_valid
+from booking_service.repository import calculate_total_price, is_dates_valid
 
 router = APIRouter(prefix="/hotels/{hotel_id}/rooms", tags=["rooms"])
 

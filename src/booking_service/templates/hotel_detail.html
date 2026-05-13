@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}{{ hotel.name }}{% endblock %}
+{% block content %}
+<a href="/" class="back-link">&#8592; Назад</a>
+
+<div class="stars" style="margin-bottom:6px;">{% for i in range(hotel.stars) %}&#9733;{% endfor %}</div>
+<h2 class="page-title">{{ hotel.name }}</h2>
+<p class="subtitle">{{ hotel.city }} &mdash; {{ hotel.address }}{% if hotel.description %} &middot; {{ hotel.description }}{% endif %}</p>
+
+<div class="date-bar">
+    <div>
+        <label>Заїзд</label>
+        <input type="date" id="ci" value="{{ check_in }}">
+    </div>
+    <div>
+        <label>Виїзд</label>
+        <input type="date" id="co" value="{{ check_out }}">
+    </div>
+    <button class="btn btn-dark" onclick="applyDates()">Перевірити</button>
+    {% if check_in and check_out %}
+    <span style="font-size:13px; color:#888; align-self:center;">{{ check_in }} &rarr; {{ check_out }}</span>
+    {% endif %}
+</div>
+
+{% if error %}<p style="color:#c0392b; font-size:13px; margin-bottom:16px;">{{ error }}</p>{% endif %}
+
+{% if not rooms %}
+<p style="color:#888; font-size:14px;">Кімнат поки немає.</p>
+{% else %}
+<div class="rooms-grid">
+{% for r in rooms %}
+<div class="room-card {% if r.available == false %}unavailable{% endif %}">
+    <div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div class="room-type">
+                {% if r.room.room_type == "single" %}Одномісна
+                {% elif r.room.room_type == "double" %}Двомісна
+                {% elif r.room.room_type == "suite" %}Люкс
+                {% else %}{{ r.room.room_type }}{% endif %}
+                &middot; №{{ r.room.number }}
+            </div>
+            {% if r.available is not none %}
+                {% if r.available %}<span class="badge badge-green">Вільна</span>
+                {% else %}<span class="badge badge-red">Зайнята</span>{% endif %}
+            {% endif %}
+        </div>
+        <div class="room-price" style="margin-top:10px;">{{ r.room.price_per_night }} грн <span>/ ніч</span></div>
+        <div class="room-meta" style="margin-top:4px;">До {{ r.room.capacity }} осіб</div>
+        {% if r.available and r.total_price %}
+        <div class="room-total" style="margin-top:6px;">Всього: {{ r.total_price }} грн</div>
+        {% endif %}
+    </div>
+    {% if r.available %}
+    <button class="btn btn-dark" onclick="openModal('m{{ r.room.id }}')">Забронювати</button>
+    {% endif %}
+</div>
+
+{% if r.available %}
+<div class="modal-overlay" id="m{{ r.room.id }}" onclick="if(event.target===this)closeModal('m{{ r.room.id }}')">
+    <div class="modal-box">
+        <div class="modal-title">Бронювання &mdash; кімната №{{ r.room.number }}</div>
+        <form method="post" action="/bookings/create">
+            <input type="hidden" name="room_id" value="{{ r.room.id }}">
+            <input type="hidden" name="hotel_id" value="{{ hotel.id }}">
+            <div class="field">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="your@email.com" required>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="field">
+                    <label>Заїзд</label>
+                    <input type="date" name="check_in" value="{{ check_in }}" required>
+                </div>
+                <div class="field">
+                    <label>Виїзд</label>
+                    <input type="date" name="check_out" value="{{ check_out }}" required>
+                </div>
+            </div>
+            {% if r.total_price %}
+            <div class="total-box">Вартість: <strong>{{ r.total_price }} грн</strong></div>
+            {% endif %}
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" onclick="closeModal('m{{ r.room.id }}')">Скасувати</button>
+                <button type="submit" class="btn btn-dark">Підтвердити</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+{% endif %}
+{% endblock %}

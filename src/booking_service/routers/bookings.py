@@ -8,7 +8,7 @@ from booking_service.database import get_db
 from booking_service.models import Booking as BookingDC
 from booking_service.models import Room as RoomDC
 from booking_service.schemas import BookingCreate, BookingOut, MessageOut
-from booking_service.utils import (
+from booking_service.repository import (
     calculate_total_price,
     is_dates_valid,
     is_room_available,

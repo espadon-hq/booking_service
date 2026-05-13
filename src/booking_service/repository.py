@@ -9,8 +9,7 @@ from datetime import date
 
 from sqlalchemy.orm import Session
 
-from booking_service.db_models import Booking, Hotel, Room, User
-from booking_service.utils import is_room_available as check_available
+from booking_service.database import Booking, Hotel, Room, User
 
 # ── Hotel ─────────────────────────────────────────────────────────────────────
 
@@ -222,6 +221,10 @@ def delete_room(db: Session, room_id: int) -> bool:
     return True
 
 
+def get_bookings_by_room(db: Session, room_id: int) -> list[Booking]:
+    """Повертає всі бронювання для кімнати."""
+    return db.query(Booking).filter(Booking.room_id == room_id).all()
+
 def get_available_rooms(
     db: Session,
     hotel_id: int,
@@ -270,7 +273,7 @@ def get_available_rooms(
 
     return [
         r for r in rooms
-        if check_available(r.id, check_in, check_out, bookings_dc)
+        if is_room_available(r.id, check_in, check_out, bookings_dc)
     ]
 
 
@@ -449,3 +452,42 @@ def get_all_bookings(db: Session) -> list[Booking]:
         .order_by(Booking.created_at.desc())
         .all()
     )
+
+# ── Бізнес-логіка ─────────────────────────────────────────────────────────────
+
+def calculate_total_price(room, check_in, check_out) -> float:
+    """Розраховує загальну вартість бронювання."""
+    from datetime import date
+    if check_out <= check_in:
+        raise ValueError("Дата виїзду повинна бути пізніше дати заїзду.")
+    nights = (check_out - check_in).days
+    return round(float(room.price_per_night) * nights, 2)
+
+
+def is_dates_valid(check_in, check_out) -> bool:
+    """Перевіряє коректність дат бронювання."""
+    from datetime import date
+    return check_in >= date.today() and check_out > check_in
+
+
+def is_room_available(room_id: int, check_in, check_out, existing_bookings: list) -> bool:
+    """Перевіряє чи кімната вільна на вказані дати."""
+    from datetime import datetime
+    def to_date(v):
+        return v.date() if isinstance(v, datetime) else v
+    for b in existing_bookings:
+        if b.room_id != room_id or b.status == "cancelled":
+            continue
+        if check_in < to_date(b.check_out) and check_out > to_date(b.check_in):
+            return False
+    return True
+
+
+def filter_hotels_by_city(hotels: list, city: str) -> list:
+    """Фільтрує готелі за містом без урахування регістру."""
+    return [h for h in hotels if h.city.lower() == city.lower()]
+
+
+def filter_rooms_by_price(rooms: list, max_price: float) -> list:
+    """Фільтрує кімнати за максимальною ціною за ніч."""
+    return [r for r in rooms if float(r.price_per_night) <= max_price]

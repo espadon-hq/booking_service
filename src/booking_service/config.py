@@ -13,7 +13,6 @@ class Settings(BaseSettings):
         "postgresql://booking_user:booking_pass@localhost:5432/booking_db"
     )
 
-    # Новий спосіб конфігурації в Pydantic v2
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

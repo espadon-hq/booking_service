@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from booking_service import db_models  # noqa: F401
+from booking_service import database as db_models  # noqa: F401
 from booking_service.database import Base, get_db
 from booking_service.main import app
 from booking_service.models import Hotel, Room, Booking
