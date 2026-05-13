@@ -2,8 +2,9 @@ fastapi
 uvicorn[standard]
 sqlalchemy
 psycopg2-binary
-pydantic
+pydantic[email]
 pydantic-settings
 jinja2
 python-multipart
 httpx
+email-validator
