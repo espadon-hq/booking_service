@@ -10,14 +10,3 @@ setup(
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
 )
-```
-
----
-
-### `requirements.txt`
-```
-flake8==7.1.1
-pytest==8.3.4
-setuptools==58.0.4
-tox==4.24.1
-python-dotenv
