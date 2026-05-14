@@ -20,7 +20,7 @@ def hotels_list(request: Request, city: str = None, db: Session = Depends(get_db
     return templates.TemplateResponse(request, "hotels.html", {"hotels": hotels, "city": city})
 
 
-@router.get("/hotels/{hotel_id}", response_class=HTMLResponse)
+@router.get("/ui/hotels/{hotel_id}", response_class=HTMLResponse)
 def hotel_detail(
     request: Request,
     hotel_id: int,
@@ -83,10 +83,10 @@ def create_booking(
         repo.create_booking(db, user_id=user.id, room_id=room_id, check_in=ci, check_out=co, total_price=total)
     except Exception:
         pass
-    return RedirectResponse(f"/hotels/{hotel_id}?check_in={check_in}&check_out={check_out}", status_code=303)
+    return RedirectResponse(f"/ui/hotels/{hotel_id}?check_in={check_in}&check_out={check_out}", status_code=303)
 
 
-@router.get("/bookings", response_class=HTMLResponse)
+@router.get("/ui/bookings", response_class=HTMLResponse)
 def bookings_list(request: Request, db: Session = Depends(get_db)):
     result = []
     for b in repo.get_all_bookings(db):
@@ -106,7 +106,7 @@ def bookings_list(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse(request, "bookings.html", {"bookings": result})
 
 
-@router.post("/bookings/{booking_id}/cancel")
+@router.post("/ui/bookings/{booking_id}/cancel")
 def cancel_booking(booking_id: int, db: Session = Depends(get_db)):
     repo.cancel_booking(db, booking_id)
-    return RedirectResponse("/bookings", status_code=303)
+    return RedirectResponse("/ui/bookings", status_code=303)
