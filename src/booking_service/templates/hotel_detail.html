@@ -59,7 +59,7 @@
 <div class="modal-overlay" id="m{{ r.room.id }}" onclick="if(event.target===this)closeModal('m{{ r.room.id }}')">
     <div class="modal-box">
         <div class="modal-title">Бронювання &mdash; кімната №{{ r.room.number }}</div>
-        <form method="post" action="/bookings/create">
+        <form method="post" action="/ui/bookings/create">
             <input type="hidden" name="room_id" value="{{ r.room.id }}">
             <input type="hidden" name="hotel_id" value="{{ hotel.id }}">
             <div class="field">

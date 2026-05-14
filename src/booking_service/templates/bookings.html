@@ -32,7 +32,7 @@
         </td>
         <td>
             {% if b.status == "confirmed" %}
-            <form method="post" action="/bookings/{{ b.id }}/cancel" style="display:inline">
+            <form method="post" action="/ui/bookings/{{ b.id }}/cancel" style="display:inline">
                 <button class="btn btn-danger-outline" onclick="return confirm('Скасувати?')">Скасувати</button>
             </form>
             {% endif %}
