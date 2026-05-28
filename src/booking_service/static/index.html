@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Booking Service</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Inter", sans-serif; background: #fff; color: #111; font-size: 15px; }
+
+        nav { border-bottom: 1px solid #eee; padding: 18px 0; }
+        .nav-inner { max-width: 960px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-logo { font-weight: 600; font-size: 15px; text-decoration: none; color: #111; }
+        .nav-links { display: flex; gap: 28px; }
+        .nav-links a { text-decoration: none; color: #666; font-size: 14px; cursor: pointer; }
+        .nav-links a:hover { color: #111; }
+
+        .container { max-width: 960px; margin: 0 auto; padding: 48px 24px; }
+        .page { display: none; }
+        .page.active { display: block; }
+
+        h1 { font-size: 28px; font-weight: 600; margin-bottom: 6px; }
+        .subtitle { color: #888; font-size: 14px; margin-bottom: 32px; }
+
+        .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
+        .filter-btn { padding: 7px 16px; border: 1px solid #ddd; background: #fff; border-radius: 20px; font-size: 13px; cursor: pointer; color: #444; }
+        .filter-btn:hover, .filter-btn.active { background: #111; color: #fff; border-color: #111; }
+
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+
+        .card { border: 1px solid #eee; border-radius: 10px; overflow: hidden; transition: border-color .15s; }
+        .card:hover { border-color: #bbb; }
+        .card-body { padding: 20px; }
+        .card-footer { padding: 16px 20px; border-top: 1px solid #f0f0f0; }
+
+        .stars { font-size: 11px; color: #f0a500; }
+        .hotel-name { font-size: 16px; font-weight: 600; margin: 6px 0 4px; }
+        .hotel-location { font-size: 13px; color: #888; margin-bottom: 8px; }
+        .hotel-desc { font-size: 13px; color: #555; line-height: 1.5; }
+
+        .btn { display: inline-block; padding: 9px 20px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all .15s; }
+        .btn-dark { background: #111; color: #fff; }
+        .btn-dark:hover { background: #333; }
+        .btn-outline { background: #fff; color: #111; border: 1px solid #ddd; }
+        .btn-outline:hover { border-color: #111; }
+        .btn-danger { background: #fff; color: #c0392b; border: 1px solid #f0c0bb; font-size: 12px; padding: 6px 14px; }
+        .btn-full { width: 100%; text-align: center; }
+
+        .back-link { font-size: 13px; color: #888; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 28px; }
+        .back-link:hover { color: #111; }
+
+        .date-bar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; padding: 20px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 28px; }
+        .date-bar label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: #888; margin-bottom: 5px; }
+        .date-bar input { border: 1px solid #ddd; border-radius: 7px; padding: 8px 12px; font-size: 14px; font-family: inherit; outline: none; }
+        .date-bar input:focus { border-color: #111; }
+
+        .rooms-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .room-card { border: 1px solid #eee; border-radius: 10px; padding: 20px; }
+        .room-type { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: #888; }
+        .room-price { font-size: 20px; font-weight: 600; margin-top: 10px; }
+        .room-price span { font-size: 13px; font-weight: 400; color: #888; }
+        .room-total { font-size: 13px; color: #2d7a4f; font-weight: 500; margin-top: 6px; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .badge-green { background: #e6f4ee; color: #2d7a4f; }
+        .badge-red { background: #fde8e6; color: #c0392b; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; color: #888; padding: 10px 12px; border-bottom: 1px solid #eee; }
+        td { padding: 14px 12px; border-bottom: 1px solid #f5f5f5; vertical-align: middle; }
+
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 100; align-items: center; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal-box { background: #fff; border-radius: 12px; padding: 28px; width: 100%; max-width: 420px; margin: 16px; }
+        .modal-title { font-size: 17px; font-weight: 600; margin-bottom: 20px; }
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; color: #888; margin-bottom: 5px; }
+        .field input { width: 100%; border: 1px solid #ddd; border-radius: 7px; padding: 9px 12px; font-size: 14px; font-family: inherit; outline: none; }
+        .field input:focus { border-color: #111; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .total-box { background: #f8f8f8; border-radius: 7px; padding: 12px 16px; font-size: 13px; margin-top: 4px; }
+
+        .error { color: #c0392b; font-size: 13px; margin-bottom: 16px; }
+        footer { border-top: 1px solid #eee; padding: 24px; text-align: center; font-size: 12px; color: #bbb; margin-top: 80px; }
+        #loading { text-align: center; color: #888; padding: 40px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <span class="nav-logo">Booking</span>
+        <div class="nav-links">
+            <a onclick="showPage('hotels')">Готелі</a>
+            <a onclick="showPage('bookings')">Бронювання</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- Сторінка готелів -->
+    <div id="page-hotels" class="page active">
+        <h1>Готелі</h1>
+        <p class="subtitle">Оберіть готель для бронювання</p>
+        <div class="filters" id="city-filters">
+            <button class="filter-btn active" onclick="filterCity(null, this)">Всі міста</button>
+        </div>
+        <div id="hotels-grid" class="grid"></div>
+    </div>
+
+    <!-- Сторінка готелю -->
+    <div id="page-hotel" class="page">
+        <a class="back-link" onclick="showPage('hotels')">&#8592; Назад</a>
+        <div id="hotel-info"></div>
+        <div class="date-bar">
+            <div>
+                <label>Заїзд</label>
+                <input type="date" id="check-in">
+            </div>
+            <div>
+                <label>Виїзд</label>
+                <input type="date" id="check-out">
+            </div>
+            <button class="btn btn-dark" onclick="checkAvailability()">Перевірити</button>
+        </div>
+        <div id="rooms-error" class="error"></div>
+        <div id="rooms-grid" class="rooms-grid"></div>
+    </div>
+
+    <!-- Сторінка бронювань -->
+    <div id="page-bookings" class="page">
+        <h1>Бронювання</h1>
+        <p class="subtitle">Перелік всіх бронювань</p>
+        <div id="bookings-table"></div>
+    </div>
+
+</div>
+
+<!-- Модальне вікно бронювання -->
+<div class="modal-overlay" id="book-modal" onclick="if(event.target===this)closeModal()">
+    <div class="modal-box">
+        <div class="modal-title" id="modal-title">Бронювання</div>
+        <div class="field">
+            <label>Email</label>
+            <input type="email" id="book-email" placeholder="your@email.com">
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="field">
+                <label>Заїзд</label>
+                <input type="date" id="book-checkin">
+            </div>
+            <div class="field">
+                <label>Виїзд</label>
+                <input type="date" id="book-checkout">
+            </div>
+        </div>
+        <div id="book-total" class="total-box" style="display:none;"></div>
+        <div id="book-error" class="error"></div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="closeModal()">Скасувати</button>
+            <button class="btn btn-dark" onclick="confirmBooking()">Підтвердити</button>
+        </div>
+    </div>
+</div>
+
+<footer>Booking Service &mdash; Лабораторна робота</footer>
+
+<script>
+const API = '';  // той самий сервер
+let currentHotelId = null;
+let currentRoomId = null;
+let currentCheckIn = null;
+let currentCheckOut = null;
+let allHotels = [];
+
+// ── Навігація ─────────────────────────────────────────────────────────────────
+
+function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    if (name === 'hotels') loadHotels();
+    if (name === 'bookings') loadBookings();
+}
+
+// ── Готелі ────────────────────────────────────────────────────────────────────
+
+async function loadHotels() {
+    const res = await fetch(API + '/hotels/');
+    allHotels = await res.json();
+    renderHotels(allHotels);
+    renderCityFilters(allHotels);
+}
+
+function renderCityFilters(hotels) {
+    const cities = [...new Set(hotels.map(h => h.city))];
+    const container = document.getElementById('city-filters');
+    container.innerHTML = '<button class="filter-btn active" onclick="filterCity(null, this)">Всі міста</button>';
+    cities.forEach(city => {
+        container.innerHTML += `<button class="filter-btn" onclick="filterCity('${city}', this)">${city}</button>`;
+    });
+}
+
+function filterCity(city, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filtered = city ? allHotels.filter(h => h.city === city) : allHotels;
+    renderHotels(filtered);
+}
+
+function renderHotels(hotels) {
+    const grid = document.getElementById('hotels-grid');
+    if (!hotels.length) { grid.innerHTML = '<p style="color:#888;font-size:14px;">Готелів не знайдено.</p>'; return; }
+    grid.innerHTML = hotels.map(h => `
+        <div class="card">
+            <div class="card-body">
+                <div class="stars">${'&#9733;'.repeat(h.stars)}</div>
+                <div class="hotel-name">${h.name}</div>
+                <div class="hotel-location">${h.city} &mdash; ${h.address}</div>
+                ${h.description ? `<div class="hotel-desc">${h.description}</div>` : ''}
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-dark btn-full" onclick="openHotel(${h.id})">Переглянути кімнати</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ── Готель + кімнати ──────────────────────────────────────────────────────────
+
+async function openHotel(hotelId) {
+    currentHotelId = hotelId;
+    showPage('hotel');
+
+    // Встановлюємо дати за замовчуванням
+    const today = new Date();
+    const ci = new Date(today); ci.setDate(ci.getDate() + 1);
+    const co = new Date(today); co.setDate(co.getDate() + 4);
+    document.getElementById('check-in').value = ci.toISOString().split('T')[0];
+    document.getElementById('check-out').value = co.toISOString().split('T')[0];
+
+    // Завантажуємо інфо про готель
+    const res = await fetch(API + '/hotels/' + hotelId);
+    const hotel = await res.json();
+    document.getElementById('hotel-info').innerHTML = `
+        <div class="stars" style="margin-bottom:6px;">${'&#9733;'.repeat(hotel.stars)}</div>
+        <h2 style="margin-bottom:4px;">${hotel.name}</h2>
+        <p class="subtitle">${hotel.city} &mdash; ${hotel.address}${hotel.description ? ' &middot; ' + hotel.description : ''}</p>
+    `;
+
+    await checkAvailability();
+}
+
+async function checkAvailability() {
+    const ci = document.getElementById('check-in').value;
+    const co = document.getElementById('check-out').value;
+    const errEl = document.getElementById('rooms-error');
+
+    if (!ci || !co) { errEl.textContent = 'Оберіть дати.'; return; }
+    if (co <= ci) { errEl.textContent = 'Дата виїзду має бути після заїзду.'; return; }
+    errEl.textContent = '';
+
+    currentCheckIn = ci;
+    currentCheckOut = co;
+
+    // Завантажуємо доступні кімнати
+    const res = await fetch(`${API}/hotels/${currentHotelId}/rooms/available?check_in=${ci}&check_out=${co}`);
+    const rooms = await res.json();
+
+    // Завантажуємо всі кімнати
+    const allRes = await fetch(`${API}/hotels/${currentHotelId}/rooms/`);
+    const allRooms = await allRes.json();
+
+    const availableIds = new Set(rooms.map(r => r.id));
+
+    document.getElementById('rooms-grid').innerHTML = allRooms.map(room => {
+        const avail = availableIds.has(room.id);
+        const nights = Math.round((new Date(co) - new Date(ci)) / 86400000);
+        const total = (room.price_per_night * nights).toFixed(2);
+        const typeUa = {single: 'Одномісна', double: 'Двомісна', suite: 'Люкс'}[room.room_type] || room.room_type;
+        return `
+            <div class="room-card ${avail ? '' : 'opacity-50'}" style="${avail ? '' : 'opacity:.45'}">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                    <div class="room-type">${typeUa} &middot; №${room.number}</div>
+                    <span class="badge ${avail ? 'badge-green' : 'badge-red'}">${avail ? 'Вільна' : 'Зайнята'}</span>
+                </div>
+                <div class="room-price">${room.price_per_night} грн <span>/ ніч</span></div>
+                <div style="font-size:13px;color:#888;margin-top:4px;">До ${room.capacity} осіб</div>
+                ${avail ? `<div class="room-total">Всього: ${total} грн</div>` : ''}
+                ${avail ? `<button class="btn btn-dark" style="margin-top:12px;" onclick="openBookModal(${room.id}, '${room.number}', ${total})">Забронювати</button>` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+// ── Бронювання ────────────────────────────────────────────────────────────────
+
+function openBookModal(roomId, roomNumber, total) {
+    currentRoomId = roomId;
+    document.getElementById('modal-title').textContent = `Бронювання — кімната №${roomNumber}`;
+    document.getElementById('book-checkin').value = currentCheckIn;
+    document.getElementById('book-checkout').value = currentCheckOut;
+    document.getElementById('book-total').textContent = `Вартість: ${total} грн`;
+    document.getElementById('book-total').style.display = 'block';
+    document.getElementById('book-error').textContent = '';
+    document.getElementById('book-email').value = '';
+    document.getElementById('book-modal').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('book-modal').classList.remove('open');
+}
+
+async function confirmBooking() {
+    const email = document.getElementById('book-email').value.trim();
+    const ci = document.getElementById('book-checkin').value;
+    const co = document.getElementById('book-checkout').value;
+    const errEl = document.getElementById('book-error');
+
+    if (!email) { errEl.textContent = 'Введіть email.'; return; }
+
+    // Знаходимо або створюємо користувача
+    let userId;
+    const usersRes = await fetch(API + '/users/');
+    const users = await usersRes.json();
+    const existing = users.find(u => u.email === email);
+
+    if (existing) {
+        userId = existing.id;
+    } else {
+        const createRes = await fetch(API + '/users/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name: email.split('@')[0], email})
+        });
+        if (!createRes.ok) { errEl.textContent = 'Помилка створення користувача.'; return; }
+        userId = (await createRes.json()).id;
+    }
+
+    // Створюємо бронювання
+    const res = await fetch(API + '/bookings/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({user_id: userId, room_id: currentRoomId, check_in: ci, check_out: co})
+    });
+
+    if (res.ok) {
+        closeModal();
+        await checkAvailability();
+    } else {
+        const err = await res.json();
+        errEl.textContent = err.detail || 'Помилка бронювання.';
+    }
+}
+
+async function loadBookings() {
+    const res = await fetch(API + '/bookings/');
+    const bookings = await res.json();
+
+    if (!bookings.length) {
+        document.getElementById('bookings-table').innerHTML = '<p style="color:#888;font-size:14px;">Бронювань поки немає.</p>';
+        return;
+    }
+
+    // Завантажуємо додаткову інфо
+    const hotelsRes = await fetch(API + '/hotels/');
+    const hotels = await hotelsRes.json();
+
+    document.getElementById('bookings-table').innerHTML = `
+        <div style="border:1px solid #eee;border-radius:10px;overflow:hidden;">
+        <table>
+            <thead><tr>
+                <th>#</th><th>Готель</th><th>Кімната</th>
+                <th>Заїзд</th><th>Виїзд</th><th>Сума</th><th>Статус</th><th></th>
+            </tr></thead>
+            <tbody>
+            ${bookings.map(b => {
+                const statusBadge = b.status === 'confirmed'
+                    ? '<span class="badge badge-green">Підтверджено</span>'
+                    : '<span class="badge" style="background:#f0f0f0;color:#888;">Скасовано</span>';
+                const cancelBtn = b.status === 'confirmed'
+                    ? `<button class="btn btn-danger" onclick="cancelBooking(${b.id})">Скасувати</button>`
+                    : '';
+                return `<tr>
+                    <td style="color:#bbb;">${b.id}</td>
+                    <td style="font-weight:500;">—</td>
+                    <td>${b.room_id}</td>
+                    <td>${b.check_in}</td>
+                    <td>${b.check_out}</td>
+                    <td><strong>${b.total_price} грн</strong></td>
+                    <td>${statusBadge}</td>
+                    <td>${cancelBtn}</td>
+                </tr>`;
+            }).join('')}
+            </tbody>
+        </table></div>
+    `;
+}
+
+async function cancelBooking(id) {
+    if (!confirm('Скасувати бронювання?')) return;
+    await fetch(API + '/bookings/' + id + '/cancel', {method: 'POST'});
+    await loadBookings();
+}
+
+// ── Ініціалізація ─────────────────────────────────────────────────────────────
+loadHotels();
+</script>
+</body>
+</html>
